@@ -7244,9 +7244,10 @@ renderContent();
 </script>
 
 <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-  import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-app.js";
+  import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
 
+  // Firebaseの設定
   const firebaseConfig = {
     apiKey: "AIzaSyBQjnlOfeVvWQJHDxGE9cq-jGsYF3uo0PY",
     authDomain: "mystudy-portal.firebaseapp.com",
@@ -7256,24 +7257,53 @@ renderContent();
     appId: "1:62253255474:web:817a3cbd1ab3ea63e7e52b"
   };
 
+  // Firebaseの初期化
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
 
-  const urlParams = new URLSearchParams(window.location.search);
-  const studentId = urlParams.get('student') || 'ゲスト';
+  // 教科名の設定（ファイルに合わせて固定）
+  const subjectName = "国語";
 
-  window.sendLearningRecord = async function(unitId, questionId) {
+  // 1. URLから studentId を取得（例: ?student=12345）
+  const urlParams = new URLSearchParams(window.location.search);
+  const studentId = urlParams.get('student');
+
+  // 2. ページ読み込み時に access_logs にアクセスログを送信
+  if (studentId) {
+    try {
+      await addDoc(collection(db, "access_logs"), {
+        studentId: studentId,
+        subject: subjectName,
+        accessedAt: serverTimestamp()
+      });
+      console.log(`【My スタディ】${subjectName}のアクセスログを記録しました。`);
+    } catch (error) {
+      console.error("アクセスログの送信に失敗しました:", error);
+    }
+  } else {
+    console.log("生徒IDがURLに指定されていないため、アクセスログは記録されません。");
+  }
+
+  // 3. 採点処理などから呼び出せるように window.sendResultToFirebase 関数を定義
+  window.sendResultToFirebase = async function(passedSubjectName, unitName, correct, total) {
+    if (!studentId) {
+      console.log("生徒IDが指定されていないため、学習記録は送信されません。");
+      return;
+    }
+
     try {
       await addDoc(collection(db, "learning_records"), {
         studentId: studentId,
-        subject: "国語",
-        unit: unitId,
-        questionId: questionId,
-        action: "採点完了",
+        subject: subjectName, // 常に「国語」として記録されます
+        unit: unitName,
+        correct: correct,
+        total: total,
         timestamp: serverTimestamp()
       });
-      console.log("国語の記録送信成功");
-    } catch (e) { console.error("送信失敗", e); }
+      console.log(`【My スタディ】${subjectName}（${unitName}）の学習記録を保存しました！`);
+    } catch (error) {
+      console.error("学習記録の送信に失敗しました:", error);
+    }
   };
 </script>
 </body>
