@@ -7261,7 +7261,7 @@ renderContent();
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
 
-  // 教科名の設定（ファイルに合わせて固定）
+  // 教科名の設定
   const subjectName = "国語";
 
   // 1. URLから studentId を取得（例: ?student=12345）
@@ -7284,7 +7284,7 @@ renderContent();
     console.log("生徒IDがURLに指定されていないため、アクセスログは記録されません。");
   }
 
- // 3. 採点処理などから呼び出せるように window.sendResultToFirebase 関数を定義
+  // 3. 採点処理などから呼び出せるように window.sendResultToFirebase 関数を定義
   window.sendResultToFirebase = async function(passedSubjectName, unitName, correct, total) {
     if (!studentId) {
       console.log("生徒IDが指定されていないため、学習記録は送信されません。");
@@ -7294,7 +7294,7 @@ renderContent();
     try {
       await addDoc(collection(db, "learning_records"), {
         studentId: studentId,
-        subject: subjectName, 
+        subject: subjectName, // 常に「国語」として記録されます
         unit: unitName,
         correct: correct,
         total: total,
@@ -7304,7 +7304,7 @@ renderContent();
     } catch (error) {
       console.error("学習記録の送信に失敗しました:", error);
     }
-  }; // ← この波括弧のすぐ下から
+  };
 
   // 4. 【国語用 特別処理】全27種類の問題の「採点する」ボタンを自動検知して送信
   document.addEventListener('click', (e) => {
@@ -7312,22 +7312,26 @@ renderContent();
       setTimeout(() => {
         const scoreArea = document.getElementById('score-area');
         if (scoreArea && scoreArea.textContent) {
+          // 画面に表示された「〇 / 〇」という点数を読み取る
           const match = scoreArea.textContent.match(/([0-9]+)\s*\/\s*([0-9]+)/);
           
           if (match && typeof TOPICS !== 'undefined' && curProb !== null) {
             const correct = parseInt(match[1], 10);
             const total = parseInt(match[2], 10);
             
+            // 単元名と問題名を取得
             const topicName = TOPICS[curTab][curTopic].name;
             const probTitle = TOPICS[curTab][curTopic].probs[curProb].title;
             const unitName = `${topicName} - ${probTitle}`;
             
+            // 送信！
             window.sendResultToFirebase("国語", unitName, correct, total);
           }
         }
       }, 100);
     }
-  }); // ← ここまでのコードを挟み込みます
+  });
+</script>
 
-</script> </body>
+</body>
 </html>
