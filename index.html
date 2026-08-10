@@ -4452,7 +4452,15 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
     renderSidebar(); renderContent();
   });
 });
-
+const urlParams = new URLSearchParams(window.location.search);
+const urlTab = urlParams.get('tab');
+if (urlTab !== null) {
+  const tabNum = parseInt(urlTab, 10);
+  const targetBtn = document.querySelector(`.tab-btn[data-tab="${tabNum}"]`);
+  if (targetBtn) {
+    targetBtn.click();
+  }
+}
 function goTopic(i) { curTopic = i; curProb = null; renderSidebar(); renderContent(); }
 function goProb(i) { curProb = i; renderContent(); }
 function goBack() { curProb = null; renderContent(); }
