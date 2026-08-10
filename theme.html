@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>中学国語 一問一答 | テーマ別学習</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Noto+Serif+JP:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Noto Sans JP',sans-serif;background:#F7F5F0;color:#2C2C2A;min-height:100vh;}
+.site-header{background:linear-gradient(135deg,#C8A96E 0%,#D4B882 50%,#C09A5A 100%);padding:0;}
+.site-header-inner{max-width:820px;margin:0 auto;padding:14px 24px;}
+.top-label{font-size:12px;color:rgba(255,255,255,0.85);letter-spacing:.08em;margin-bottom:4px;text-align:center;}
+.main-title{display:flex;align-items:center;justify-content:center;gap:12px;font-family:'Noto Serif JP',serif;font-size:28px;font-weight:700;color:#fff;letter-spacing:.06em;text-shadow:1px 1px 0 rgba(0,0,0,0.25),-1px 1px 0 rgba(0,0,0,0.25),1px -1px 0 rgba(0,0,0,0.25),-1px -1px 0 rgba(0,0,0,0.25);}
+.container{max-width:820px;margin:0 auto;padding:24px 16px 60px;}
+
+/* メインタブ */
+.tabs{display:flex;border-bottom:2.5px solid #B8964A;margin-bottom:20px;}
+.tab-btn{padding:11px 24px;font-size:15px;font-weight:500;font-family:'Noto Sans JP',sans-serif;border:none;background:transparent;cursor:pointer;color:#888780;border-bottom:3px solid transparent;margin-bottom:-2.5px;transition:color .15s;text-decoration:none;display:inline-block;}
+.tab-btn.active{color:#8A6A1A;border-bottom-color:#B8964A;background:#F5EDDA;border-radius:6px 6px 0 0;font-weight:700;}
+.tab-btn:hover:not(.active){color:#2C2C2A;}
+
+.main-layout{display:flex;gap:16px;align-items:flex-start;}
+.sidebar{width:220px;flex-shrink:0;background:#fff;border:0.5px solid #DDD5C0;border-radius:10px;padding:8px 6px;}
+.sidebar-label{font-size:11px;color:#9A8A6A;padding:6px 8px 4px;letter-spacing:.06em;font-weight:500;}
+.topic-btn{display:flex;align-items:center;width:100%;text-align:left;background:transparent;border:none;border-radius:6px;padding:9px 10px;font-size:13px;font-family:'Noto Sans JP',sans-serif;color:#2C2C2A;cursor:pointer;transition:background .12s;line-height:1.4;gap:6px;}
+.topic-btn:hover{background:#F5EDDA;}
+.topic-btn.active{background:#F5EDDA;color:#7A5A10;font-weight:700;}
+.topic-btn .t-name{flex:1;}
+.badge{font-size:10px;background:#F0EBE0;color:#9A8A6A;border-radius:4px;padding:1px 5px;flex-shrink:0;white-space:nowrap;}
+.topic-btn.active .badge{background:#E8D8A0;color:#7A5A10;}
+
+.content-area{flex:1;min-width:0;}
+.content-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;padding-bottom:8px;border-bottom:1px solid #DDD5C0;flex-wrap:wrap;gap:10px;}
+.prob-header{font-size:16px;font-weight:700;color:#2C2C2A;font-family:'Noto Serif JP',serif;}
+
+/* モード切替スイッチャー */
+.mode-switch{display:flex;background:#EFECE2;border-radius:20px;padding:3px;border:1px solid #DDD5C0;}
+.mode-btn{border:none;background:transparent;padding:5px 14px;border-radius:16px;font-size:12.5px;font-weight:500;font-family:'Noto Sans JP',sans-serif;cursor:pointer;color:#6A5A40;transition:all .15s;}
+.mode-btn.active{background:#C8A96E;color:#fff;font-weight:700;box-shadow:0 1px 3px rgba(0,0,0,0.1);}
+
+/* 単語カード（暗記モード） */
+.card-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px;margin-bottom:20px;}
+.word-card{background:#fff;border:1.5px solid #DDD5C0;border-left:4px solid #C8A96E;border-radius:8px;padding:12px 14px;box-shadow:0 1px 4px rgba(0,0,0,0.03);}
+.word-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px;}
+.word-title{font-family:'Noto Serif JP',serif;font-size:20px;font-weight:700;color:#8A6A1A;}
+.tag{font-size:10px;padding:1px 6px;border-radius:4px;color:#fff;font-weight:700;}
+.tag-超重要{background:#C8443A;}
+.tag-重要{background:#D48806;}
+.tag-注意{background:#2E8B57;}
+.word-meaning{font-size:14px;font-weight:700;color:#2C2C2A;margin-bottom:6px;line-height:1.4;}
+.word-example{font-size:12px;color:#6A5A40;background:#FBF7EE;padding:6px 8px;border-radius:5px;border:1px solid #EDE5D0;line-height:1.5;}
+
+/* 4択テスト（テストモード） */
+.quiz-list{display:flex;flex-direction:column;gap:12px;margin-bottom:20px;}
+.quiz-card{background:#fff;border:1.5px solid #DDD5C0;border-radius:8px;padding:14px 16px;}
+.quiz-q{font-size:14.5px;font-weight:700;color:#2C2C2A;margin-bottom:12px;line-height:1.6;}
+.quiz-q .q-word{font-family:'Noto Serif JP',serif;font-size:18px;color:#8A6A1A;padding:0 2px;}
+.quiz-options{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.q-opt{padding:9px 12px;border:1.5px solid #DDD5C0;background:#F7F5F0;border-radius:6px;font-size:13.5px;font-family:'Noto Sans JP',sans-serif;color:#2C2C2A;cursor:pointer;text-align:left;transition:all .12s;}
+.q-opt:hover:not(:disabled){border-color:#C8A96E;background:#FBF7EE;}
+.q-opt.correct{background:#EAF3DE !important;border-color:#3B6D11 !important;color:#1A4A0A !important;font-weight:700;}
+.q-opt.wrong{background:#FCEBEB !important;border-color:#A32D2D !important;color:#A32D2D !important;}
+.q-opt.miss{background:#EAF3DE !important;border-color:#3B6D11 !important;color:#1A4A0A !important;opacity:0.6;}
+.quiz-feedback{margin-top:8px;font-size:12.5px;font-weight:700;display:none;}
+
+.check-btn{width:100%;background:#C8A96E;color:#fff;border:none;border-radius:8px;padding:11px;font-size:14px;font-weight:700;font-family:'Noto Sans JP',sans-serif;cursor:pointer;margin-bottom:10px;transition:background .12s;}
+.check-btn:hover{background:#B8964A;}
+.score-box{background:#FBF7EE;border:1.5px solid #C8A96E;border-radius:8px;padding:12px 16px;font-size:14px;color:#6A5A40;margin-bottom:10px;text-align:center;}
+.score-box strong{color:#7A5A10;font-size:16px;}
+
+@media(max-width:600px){
+  .main-layout{flex-direction:column;}
+  .sidebar{width:100%;}
+  .tab-btn{padding:10px 16px;font-size:14px;}
+  .quiz-options{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<div class="site-header">
+  <div class="site-header-inner">
+    <div class="top-label">志学ゼミナール｜穴埋めチャレンジ！</div>
+    <div class="main-title">
+      <span>📖</span><span>中学国語 一問一答</span>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <!-- メインタブ（国文法・古典はindex.htmlのアンカーパラメータで切り替え） -->
+  <div class="tabs">
+    <a href="index.html?tab=0" class="tab-btn">国文法</a>
+    <a href="index.html?tab=1" class="tab-btn">古典</a>
+    <a href="theme.html" class="tab-btn active">テーマ別学習</a>
+  </div>
+
+  <div class="main-layout">
+    <!-- 左サイドバー -->
+    <div class="sidebar">
+      <div class="sidebar-label">テーマ別 内容</div>
+      <button class="topic-btn active" id="side-btn-0" onclick="switchTopic(0)">
+        <span class="num-label">1.</span>
+        <span class="t-name">最重要古文単語20</span>
+        <span class="badge">20語</span>
+      </button>
+      <button class="topic-btn" id="side-btn-1" onclick="switchTopic(1)">
+        <span class="num-label">2.</span>
+        <span class="t-name">現代語と意味の異なる古語</span>
+        <span class="badge">27語</span>
+      </button>
+    </div>
+
+    <!-- 右メイン領域 -->
+    <div class="content-area">
+      <div class="content-header">
+        <div class="prob-header" id="topic-title">最重要古文単語20</div>
+        <div class="mode-switch">
+          <button class="mode-btn active" id="m-btn-card" onclick="switchMode('card')">🃏 暗記カード</button>
+          <button class="mode-btn" id="m-btn-test" onclick="switchMode('test')">✍️ 確認テスト(4択)</button>
+        </div>
+      </div>
+
+      <!-- 暗記カード表示エリア -->
+      <div id="card-area" class="card-grid"></div>
+
+      <!-- テスト表示エリア -->
+      <div id="test-area" style="display:none;">
+        <div id="quiz-list-container" class="quiz-list"></div>
+        <button class="check-btn" id="chk-btn" onclick="checkQuiz()">✔ 採点する</button>
+        <div id="score-area"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* データ定義 */
+const THEME_DATA = [
+  {
+    name: "最重要古文単語20",
+    items: [
+      { word: "いと", meaning: "とても、非常に", example: "いと美し（とても美しい）", tag: "超重要", options: ["とても、非常に", "少し、わずかに", "まったく", "決して"] },
+      { word: "をかし", meaning: "趣がある、美しい", example: "をかしき物（趣のある物）", tag: "超重要", options: ["趣がある、美しい", "おかしな、変な", "恐ろしい", "悲しい"] },
+      { word: "あはれ", meaning: "しみじみとした感動", example: "あはれなり（しみじみと感動する）", tag: "超重要", options: ["しみじみとした感動", "あわれみ、かわいそう", "驚き、驚愕", "不満、憤り"] },
+      { word: "おどろく", meaning: "目を覚ます、気づく", example: "夜中におどろく（夜中に目を覚ます）", tag: "注意", options: ["目を覚ます、気づく", "非常に驚く", "大声で叫ぶ", "走り出す"] },
+      { word: "あやし", meaning: "不思議だ、身分が低い", example: "あやしき者（身分の低い者）", tag: "重要", options: ["不思議だ、身分が低い", "怪しい、危険だ", "素晴らしい", "悲しい"] },
+      { word: "いみじ", meaning: "すばらしい、ひどい", example: "いみじき事（すばらしい事）", tag: "重要", options: ["すばらしい、ひどい", "気味が悪い", "見事だ", "小さくてかわいい"] },
+      { word: "ゆかし", meaning: "見たい、聞きたい、知りたい", example: "ゆかしき人（会いたい人）", tag: "重要", options: ["見たい、知りたい", "奥ゆかしい", "行きたい", "恐ろしい"] },
+      { word: "つきづきし", meaning: "似つかわしい、ふさわしい", example: "つきづきしき装束（ふさわしい装束）", tag: "重要", options: ["似つかわしい、ふさわしい", "月が美しい", "つきまとわれる", "しつこい"] },
+      { word: "やむごとなし", meaning: "高貴だ、尊い", example: "やむごとなき人（高貴な人）", tag: "重要", options: ["高貴だ、尊い", "やむを得ない", "止められない", "非常に危険だ"] },
+      { word: "ねたし", meaning: "うらやましい、憎らしい", example: "ねたしき事（うらやましい事）", tag: "注意", options: ["うらやましい、憎らしい", "ねむい", "寝返りをうつ", "ずる賢い"] },
+      { word: "かたはらいたし", meaning: "苦々しい、見苦しい", example: "かたはらいたき様（見苦しい様子）", tag: "重要", options: ["苦々しい、見苦しい", "お腹が痛い", "片側が痛い", "恥ずかしい"] },
+      { word: "いとほし", meaning: "かわいそうだ、愛らしい", example: "いとほしき者（かわいそうな人）", tag: "重要", options: ["かわいそうだ、愛らしい", "愛おしい", "たいへん欲しい", "おそろしい"] },
+      { word: "すさまじ", meaning: "興ざめする、殺風景だ", example: "すさまじき事（興ざめする事）", tag: "重要", options: ["興ざめする、殺風景だ", "すさまじい", "荒々しい", "素晴らしい"] },
+      { word: "つれづれ", meaning: "することがなくて退屈", example: "つれづれなるまま（退屈なので）", tag: "重要", options: ["することがなくて退屈", "連れ立っていく様子", "辛くて泣く様子", "ゆっくり歩く"] },
+      { word: "ほいなし", meaning: "期待はずれだ、つまらない", example: "ほいなき事（期待はずれの事）", tag: "重要", options: ["期待はずれだ、つまらない", "方法がない", "声が出ない", "意味がない"] },
+      { word: "めでたし", meaning: "すばらしい、美しい", example: "めでたき花（美しい花）", tag: "重要", options: ["すばらしい、美しい", "目出度い、お祝いだ", "珍しい", "誇らしい"] },
+      { word: "はづかし", meaning: "立派だ、（立派すぎて）気後れする", example: "はづかしき人（立派な人）", tag: "注意", options: ["立派だ、気後れする", "恥ずかしい", "照れくさい", "見苦しい"] },
+      { word: "たのもし", meaning: "頼りがいがある、心強い", example: "たのもしき人（頼りがいのある人）", tag: "重要", options: ["頼りがいがある、心強い", "たのしい", "楽しみだ", "楽そうだ"] },
+      { word: "あさまし", meaning: "驚くほどひどい、呆れる", example: "あさましき事（ひどい事）", tag: "重要", options: ["驚くほどひどい、呆れる", "朝早い", "あさましい", "寂しい"] },
+      { word: "こころもとなし", meaning: "不安だ、気がかりだ", example: "こころもとなき事（不安な事）", tag: "重要", options: ["不安だ、気がかりだ", "心が広い", "元気がよい", "心当たりがない"] }
+    ]
+  },
+  {
+    name: "現代語と意味の異なる古語",
+    items: [
+      { word: "あからさま", meaning: "ついちょっと", example: "あからさまに立ち寄る", tag: "注意", options: ["ついちょっと", "あからさまに", "完全に", "突然"] },
+      { word: "あきらむ", meaning: "はっきりさせる", example: "理（ことわり）をあきらむ", tag: "注意", options: ["はっきりさせる", "断念する", "あきれ返る", "明かりをつける"] },
+      { word: "あやし", meaning: "不思議だ、身分が低い", example: "あやしき光", tag: "注意", options: ["不思議だ、身分が低い", "怪しい", "危険だ", "みすぼらしい"] },
+      { word: "ありがたし", meaning: "めずらしい、めったにない", example: "ありがたき存在", tag: "注意", options: ["めずらしい、めったにない", "感謝している", "難しくない", "親切だ"] },
+      { word: "あはれ", meaning: "しみじみとした趣がある", example: "あはれなる景色", tag: "注意", options: ["しみじみとした趣がある", "哀れだ、かわいそうだ", "恐ろしい", "退屈だ"] },
+      { word: "をかし", meaning: "風情がある、趣がある", example: "いとをかし", tag: "注意", options: ["風情がある、趣がある", "おかしい、笑える", "変だ", "珍しい"] },
+      { word: "かなし", meaning: "かわいい、愛おしい", example: "かなしき子", tag: "注意", options: ["かわいい、愛おしい", "悲しい、切ない", "貧しい", "苦しい"] },
+      { word: "うつくし", meaning: "かわいらしい", example: "うつくしき雛（ひな）", tag: "注意", options: ["かわいらしい", "美しい、きれいだ", "立派だ", "おとなしい"] },
+      { word: "うしろめたし", meaning: "心配だ、不安だ", example: "道中がうしろめたし", tag: "注意", options: ["心配だ、不安だ", "後ろめたい、罪悪感がある", "危険だ", "恐ろしい"] },
+      { word: "おこなふ", meaning: "仏道修行をする", example: "おこなひに励む", tag: "注意", options: ["仏道修行をする", "実行する", "指示を出す", "お祭りをする"] },
+      { word: "おとなし", meaning: "大人らしい、分別がある", example: "おとなしき人", tag: "注意", options: ["大人らしい、分別がある", "静かだ、喋らない", "気が弱い", "素直だ"] },
+      { word: "おどろく", meaning: "目を覚ます、気づく", example: "はっとおどろく", tag: "注意", options: ["目を覚ます、気づく", "びっくりする", "大声で叫ぶ", "走り出す"] },
+      { word: "おろかなり", meaning: "いい加減だ、疎かだ", example: "おろかにす", tag: "注意", options: ["いい加減だ、疎かだ", "愚かだ、バカだ", "静かだ", "不真面目だ"] },
+      { word: "おぼえ", meaning: "思われること、評判", example: "帝（みかど）のおぼえ", tag: "注意", options: ["思われること、評判", "記憶、暗記", "覚悟", "予感"] },
+      { word: "かしこし", meaning: "おそれ多い、かしこい", example: "かしこき所に参る", tag: "注意", options: ["おそれ多い", "賢い、頭が良い", "堅い", "厳しい"] },
+      { word: "かはゆし", meaning: "はずかしい気がする、気の毒だ", example: "身の置き所もなくかはゆし", tag: "注意", options: ["はずかしい気がする", "可愛らしい", "かわいそうだ", "羨ましい"] },
+      { word: "ことわり", meaning: "筋道、道理", example: "ことわりを述べる", tag: "注意", options: ["筋道、道理", "お断り、拒否", "言い訳", "挨拶"] },
+      { word: "さらなり", meaning: "言うまでもない", example: "言うもさらなり", tag: "注意", options: ["言うまでもない", "さらさらしている", "新しい", "立ち去る"] },
+      { word: "はづかし", meaning: "立派だ（気が引ける）", example: "はづかしき人の気配", tag: "注意", options: ["立派だ（気が引ける）", "恥ずかしい、照れる", "見苦しい", "嫌だ"] },
+      { word: "ののしる", meaning: "大声で騒ぐ、評判になる", example: "天地にののしる", tag: "注意", options: ["大声で騒ぐ", "悪口を言う", "怒鳴りつける", "大泣きする"] },
+      { word: "なかなか", meaning: "かえって、むしろ", example: "なかなか言はざるがまし", tag: "注意", options: ["かえって、むしろ", "かなり、相当", "なかなか終わらない", "簡単に"] },
+      { word: "なほ", meaning: "やはり、そうは言っても", example: "なほ奥ゆかし", tag: "注意", options: ["やはり", "なおさら", "直す", "すぐに"] },
+      { word: "まもる", meaning: "じっと見つめる", example: "顔をまもる", tag: "注意", options: ["じっと見つめる", "保護する、守る", "ルールを守る", "見張りを立てる"] },
+      { word: "まめなり", meaning: "まじめだ、実用的だ", example: "まめなる人", tag: "注意", options: ["まじめだ、実用的だ", "まめまめしい（マメだ）", "小さい", "元気だ"] },
+      { word: "めでたし", meaning: "すばらしい、立派だ", example: "いとめでたし", tag: "注意", options: ["すばらしい、立派だ", "目出度い、お祝いだ", "珍しい", "素晴らしい"] },
+      { word: "やがて", meaning: "そのまま、すぐに", example: "やがて息絶えぬ", tag: "注意", options: ["そのまま、すぐに", "いずれ、そのうち", "やがて訪れる", "念のために"] },
+      { word: "ゆかし", meaning: "見たい、知りたい、行きたい", example: "ゆかしかりしかど", tag: "注意", options: ["見たい、知りたい", "奥ゆかしい", "行きたい", "懐かしい"] }
+    ]
+  }
+];
+
+let curTopic = 0;
+let curMode = 'card'; // 'card' or 'test'
+let userAnswers = {};
+
+window.onload = function() {
+  renderAll();
+};
+
+function switchTopic(idx) {
+  curTopic = idx;
+  document.querySelectorAll('.topic-btn').forEach((btn, i) => {
+    btn.classList.toggle('active', i === idx);
+  });
+  document.getElementById('topic-title').textContent = THEME_DATA[curTopic].name;
+  userAnswers = {};
+  renderAll();
+}
+
+function switchMode(mode) {
+  curMode = mode;
+  document.getElementById('m-btn-card').classList.toggle('active', mode === 'card');
+  document.getElementById('m-btn-test').classList.toggle('active', mode === 'test');
+  document.getElementById('card-area').style.display = (mode === 'card') ? 'grid' : 'none';
+  document.getElementById('test-area').style.display = (mode === 'test') ? 'block' : 'none';
+  if (mode === 'test') {
+    renderQuiz();
+  }
+}
+
+function renderAll() {
+  const data = THEME_DATA[curTopic].items;
+  
+  // 1. カードモードの描写
+  const cardHtml = data.map(item => `
+    <div class="word-card">
+      <div class="word-top">
+        <span class="word-title">${item.word}</span>
+        <span class="tag tag-${item.tag}">${item.tag}</span>
+      </div>
+      <div class="word-meaning">${item.meaning}</div>
+      <div class="word-example">例：${item.example}</div>
+    </div>
+  `).join('');
+  document.getElementById('card-area').innerHTML = cardHtml;
+
+  // 2. テストモードの描写
+  if (curMode === 'test') {
+    renderQuiz();
+  }
+}
+
+function renderQuiz() {
+  const data = THEME_DATA[curTopic].items;
+  let quizHtml = '';
+  
+  data.forEach((item, idx) => {
+    // 選択肢の簡易シャッフル固定化（インデックス依存）
+    const options = [...item.options];
+    quizHtml += `
+      <div class="quiz-card" id="q-card-${idx}">
+        <div class="quiz-q">問${idx + 1}. 「<span class="q-word">${item.word}</span>」の意味として最も適当なものを選びなさい。</div>
+        <div class="quiz-options">
+          ${options.map((opt, oi) => `
+            <button class="q-opt" data-q="${idx}" data-val="${opt}" onclick="selectOpt(${idx}, '${opt}', this)">${opt}</button>
+          `).join('')}
+        </div>
+        <div class="quiz-feedback" id="fb-${idx}"></div>
+      </div>
+    `;
+  });
+  
+  document.getElementById('quiz-list-container').innerHTML = quizHtml;
+  document.getElementById('score-area').innerHTML = '';
+}
+
+function selectOpt(qIdx, val, btnEl) {
+  userAnswers[qIdx] = val;
+  const parent = btnEl.closest('.quiz-options');
+  parent.querySelectorAll('.q-opt').forEach(b => b.classList.remove('active', 'correct', 'wrong'));
+  btnEl.classList.add('active');
+  btnEl.style.borderColor = '#C8A96E';
+  btnEl.style.background = '#F5EDDA';
+}
+
+function checkQuiz() {
+  const data = THEME_DATA[curTopic].items;
+  let correctCount = 0;
+
+  data.forEach((item, idx) => {
+    const parent = document.getElementById(`q-card-${idx}`);
+    const btns = parent.querySelectorAll('.q-opt');
+    const userAns = userAnswers[idx];
+    const correctAns = item.meaning;
+
+    btns.forEach(b => {
+      b.disabled = true;
+      const val = b.dataset.val;
+      if (val === correctAns) {
+        if (userAns === correctAns) {
+          b.classList.add('correct');
+        } else {
+          b.classList.add('miss');
+        }
+      } else if (val === userAns && userAns !== correctAns) {
+        b.classList.add('wrong');
+      }
+    });
+
+    if (userAns === correctAns) {
+      correctCount++;
+    }
+  });
+
+  const total = data.length;
+  const pct = Math.round((correctCount / total) * 100);
+  const msg = (pct === 100) ? '🎉 全問正解！素晴らしい！' : (pct >= 70) ? '😊 よくできました！' : '📖 もう一度カードで復習してみよう！';
+
+  document.getElementById('score-area').innerHTML = `
+    <div class="score-box">
+      ${msg} <strong>${correctCount} / ${total}</strong> 問正解（${pct}点）
+    </div>
+  `;
+
+  // My スタディ (Firebase) への記録送信
+  if (window.sendResultToFirebase) {
+    const unitName = `テーマ別 - ${THEME_DATA[curTopic].name}`;
+    window.sendResultToFirebase("国語", unitName, correctCount, total);
+  }
+}
+</script>
+
+<!-- Firebase 連携スクリプト（既存 index.html と同一構成） -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-app.js";
+  import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyBQjnlOfeVvWQJHDxGE9cq-jGsYF3uo0PY",
+    authDomain: "mystudy-portal.firebaseapp.com",
+    projectId: "mystudy-portal",
+    storageBucket: "mystudy-portal.firebasestorage.app",
+    messagingSenderId: "62253255474",
+    appId: "1:62253255474:web:817a3cbd1ab3ea63e7e52b"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  const subjectName = "国語";
+
+  const urlParams = new URLSearchParams(window.location.search);
+  const studentId = urlParams.get('student');
+
+  if (studentId) {
+    try {
+      await addDoc(collection(db, "access_logs"), {
+        studentId: studentId,
+        subject: subjectName,
+        accessedAt: serverTimestamp()
+      });
+    } catch (error) {
+      console.error("ログ送信失敗:", error);
+    }
+  }
+
+  window.sendResultToFirebase = async function(passedSubjectName, unitName, correct, total) {
+    if (!studentId) return;
+    try {
+      await addDoc(collection(db, "learning_records"), {
+        studentId: studentId,
+        subject: subjectName,
+        unit: unitName,
+        correct: correct,
+        total: total,
+        timestamp: serverTimestamp()
+      });
+      console.log(`【My スタディ】学習記録を保存しました: ${unitName}`);
+    } catch (error) {
+      console.error("記録失敗:", error);
+    }
+  };
+</script>
+
+</body>
+</html>
