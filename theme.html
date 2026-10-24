@@ -331,6 +331,7 @@ function checkQuiz() {
 <!-- Firebase 連携スクリプト（既存 index.html と同一構成） -->
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-app.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-auth.js";
   import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.14.0/firebase-firestore.js";
 
   const firebaseConfig = {
@@ -343,28 +344,41 @@ function checkQuiz() {
   };
 
   const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
   const db = getFirestore(app);
   const subjectName = "国語";
+  const PORTAL_URL = "https://shigakusakura-pixel.github.io/mystudyroom/";
 
-  const urlParams = new URLSearchParams(window.location.search);
-  const studentId = urlParams.get('student');
+  const user = await new Promise((resolve, reject) => {
+    let unsubscribe = () => {};
+    unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      unsubscribe();
+      if (currentUser && currentUser.email) {
+        resolve(currentUser);
+        return;
+      }
+      alert("ログインが必要です。ポータルへ戻ります。");
+      window.location.replace(PORTAL_URL);
+      reject(new Error("Firebase Authenticationのログイン情報がありません。"));
+    }, reject);
+  });
+  const studentId = user.email.trim().toLowerCase();
 
-  if (studentId) {
-    try {
-      await addDoc(collection(db, "access_logs"), {
-        studentId: studentId,
-        subject: subjectName,
-        accessedAt: serverTimestamp()
-      });
-    } catch (error) {
-      console.error("ログ送信失敗:", error);
-    }
+  try {
+    await addDoc(collection(db, "access_logs"), {
+      uid: user.uid,
+      studentId: studentId,
+      subject: subjectName,
+      accessedAt: serverTimestamp()
+    });
+  } catch (error) {
+    console.error("ログ送信失敗:", error);
   }
 
   window.sendResultToFirebase = async function(passedSubjectName, unitName, correct, total) {
-    if (!studentId) return;
     try {
       await addDoc(collection(db, "learning_records"), {
+        uid: user.uid,
         studentId: studentId,
         subject: subjectName,
         unit: unitName,
